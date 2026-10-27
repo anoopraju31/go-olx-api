@@ -1,20 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/anoopraju31/olx-api/internal/config"
 )
 
 func main() {
-	dotenvErr := godotenv.Load()
+	cfg := config.MustLoad()
 
-	if dotenvErr != nil {
-		log.Fatal("ERROR: fail to load .env file")
-	}
+	fmt.Println("SERVER is STARTING...")
 
 	mux := http.NewServeMux()
 
@@ -27,7 +25,7 @@ func main() {
 	})
 
 	srv := http.Server{
-		Addr:         ":" + os.Getenv("PORT"),
+		Addr:         ":" + cfg.Port,
 		Handler:      mux,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 30,
