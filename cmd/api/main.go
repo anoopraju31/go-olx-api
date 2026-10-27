@@ -25,9 +25,7 @@ func main() {
 		IdleTimeout:  time.Second * 60,
 	}
 
-	err := srv.ListenAndServe()
-
-	if err != nil {
+	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("SERVER FAILED: %v", err.Error())
 	}
 }
