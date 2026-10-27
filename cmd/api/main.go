@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/anoopraju31/olx-api/internal/config"
+	"github.com/anoopraju31/olx-api/internal/handlers"
 )
 
 func main() {
@@ -15,14 +16,7 @@ func main() {
 	fmt.Println("SERVER is STARTING...")
 
 	mux := http.NewServeMux()
-
-	// Health route
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		w.Write([]byte(`{"status": "OK"}`))
-	})
+	mux.HandleFunc("GET /healthz", handlers.Health)
 
 	srv := http.Server{
 		Addr:         ":" + cfg.Port,
