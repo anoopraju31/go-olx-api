@@ -19,12 +19,12 @@ func main() {
 
 	cfg := config.MustLoad()
 
-	m, err := migrate.New(
+	m, migErr := migrate.New(
 		"file://migrations",
 		cfg.DatabaseUrl,
 	)
-	if err != nil {
-		log.Fatalf("migration.new: %v", err)
+	if migErr != nil {
+		log.Fatalf("migration.new: %v", migErr)
 	}
 
 	switch os.Args[1] {
@@ -41,6 +41,4 @@ func main() {
 	default:
 		log.Fatalf("UNKNOW COMMAND: %s", os.Args[1])
 	}
-
-	fmt.Println("Hello World!")
 }
