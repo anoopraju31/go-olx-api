@@ -32,6 +32,7 @@ func NewListingHandler(db *sql.DB, logger *slog.Logger) *ListingHandler {
 func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 	// request scoped context
 	ctx := r.Context()
+	requestId := ctx.Value("requestCtxId").(string)
 	rows, err := lh.db.QueryContext(
 		ctx,
 		`SELECT id, title, description, price, city, created_at
@@ -39,7 +40,7 @@ func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 			ORDER BY created_at DESC
 			LIMIT 100`)
 	if err != nil {
-		lh.logger.Error("listings query error", "err", err)
+		lh.logger.Error("listings query error", "request_id", requestId, "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -51,7 +52,7 @@ func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 		var l listing
 		if err := rows.Scan(&l.ID, &l.Title, &l.Description, &l.Price, &l.City, &l.CreatedAt); err != nil {
 			// log.Printf("rows.scan: %v", err)
-			lh.logger.Error("lsitings rows scan error", "err", err)
+			lh.logger.Error("lsitings rows scan error", "request_id", requestId, "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -60,7 +61,7 @@ func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := rows.Err(); err != nil {
-		lh.logger.Error("row.err", "err", err)
+		lh.logger.Error("row.err", "request_id", requestId, "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 
@@ -72,11 +73,12 @@ func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 
 func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	requestId := ctx.Value("requestCtxId").(string)
 	id := r.PathValue("id")
 	_, err := lh.db.ExecContext(ctx, `DELETE FROM listings WHERE id = $1`, id)
 	if err != nil {
 		// log.Printf("delete listing: %v", err)
-		lh.logger.Error("delete failed", "listing_id", id, "err", err)
+		lh.logger.Error("delete failed", "request_id", requestId, "listing_id", id, "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
