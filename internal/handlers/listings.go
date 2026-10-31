@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -70,10 +71,10 @@ func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := r.PathValue("id")
-
-	_, err := lh.db.ExecContext(ctx, `DELETE FROM listings WHERE id = $1`, id)
+	_, err := lh.db.ExecContext(ctx, `DELETE FROM listing WHERE id = $1`, id)
 	if err != nil {
-		log.Printf("delete listing: %v", err)
+		// log.Printf("delete listing: %v", err)
+		slog.Error("delete failed", "listing_id", id, "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
