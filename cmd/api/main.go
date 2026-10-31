@@ -21,10 +21,12 @@ func main() {
 	fmt.Println("DATABASE CONNECTED!")
 	fmt.Println("SERVER is STARTING...")
 
+	lh := handlers.NewListingHandler(db)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handlers.Health)
-	mux.HandleFunc("GET /listings", handlers.List(db))
-	mux.HandleFunc("DELETE /listings/{id}", handlers.DeleteListing(db))
+	mux.HandleFunc("GET /listings", lh.List)
+	mux.HandleFunc("DELETE /listings/{id}", lh.DeleteListing)
 
 	srv := http.Server{
 		Addr:         ":" + cfg.Port,
