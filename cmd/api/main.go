@@ -30,7 +30,7 @@ func main() {
 	fmt.Println("DATABASE CONNECTED!")
 	fmt.Println("SERVER is STARTING...")
 
-	lh := handlers.NewListingHandler(db)
+	lh := handlers.NewListingHandler(db, logger)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handlers.Health)
